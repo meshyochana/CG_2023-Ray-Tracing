@@ -1,14 +1,36 @@
+import numpy as np
+from surfaces.surface import Surface
+from material import Material
+from light import Light
+from scene_settings import SceneSettings
+
 class Scene():
-    def __init__(self, camera, scene_settings, objects):
+    def __init__(self, camera, scene_settings: SceneSettings, objects, width: int, height: int):
         self.camera = camera
         self.scene_settings = scene_settings
         self._set_objects(objects)
+        self.output_dimensions = (width, height, )
 
     def _set_objects(self, objects):
         # ...
         self.materials = list()
-        self.objects = list()
+        self.surfaces = list()
         self.lights = list()
+        #  Divide into lists
+        for o in objects:
+            if isinstance(o, Surface):
+                o.set_material(self.materials)
+                self.surfaces.append(o)
+            elif isinstance(o, Light):
+                self.lights.append(o)
+            elif isinstance(o, Material):
+                self.materials.append(o)
+            else:
+                raise TypeError('Unknown object type - neither Surface, Light or Material')
+                
+        # 2. Initialise surfaces with materials
+        for s in self.surfaces:
+            s.set_material(self.materials[s.material_index])
 
     def render(self):
         # TODO:
@@ -22,8 +44,9 @@ class Scene():
 
     def image_pixels(self):
         pixels = list()
-        # [(0,0), (0,1), ..., (0, 500), ..., (500, 0), ..., (500, 500)]
-        # type: list or generator
+        # np.array([(0,0), (0,1), ..., (0, 500), ..., (500, 0), ..., (500, 500)])
+        pixels = np.indices(self.output_dimensions)
+        pixels = pixels.reshape(2, -1).T
         return pixels
     
     def transform_pixel(self, pixel):

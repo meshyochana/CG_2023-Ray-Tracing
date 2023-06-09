@@ -9,7 +9,7 @@ from scene_settings import SceneSettings
 from surfaces.cube import Cube
 from surfaces.infinite_plane import InfinitePlane
 from surfaces.sphere import Sphere
-
+from scene import Scene
 
 def parse_scene_file(file_path):
     objects = []
@@ -52,7 +52,7 @@ def save_image(image_array):
 
     # Save the image to a file
     image.save("scenes/Spheres.png")
-
+    
 
 def main():
     parser = argparse.ArgumentParser(description='Python Ray Tracer')
@@ -66,6 +66,7 @@ def main():
     camera, scene_settings, objects = parse_scene_file(args.scene_file)
 
     # TODO: Implement the ray tracer
+    scene = Scene(camera, scene_settings, objects, args.width, args.height)
 
     # Dummy result
     image_array = np.zeros((500, 500, 3))
