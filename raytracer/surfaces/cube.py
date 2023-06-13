@@ -11,12 +11,13 @@ class Cube(Surface):
         self.faces = self._create_faces()
         
     def _create_faces(self):
-        x_distance = self.position[1] * self.position[2]
-        y_distance = self.position[0] * self.position[2]
-        z_distance = self.position[0] * self.position[1]
-        yz_planes = TwoParallelInfinitePlanes([1, 0, 0], x_distance - self.d, x_distance + self.d)
-        xz_planes = TwoParallelInfinitePlanes([0, 1, 0], y_distance - self.d, y_distance + self.d)
-        xy_planes = TwoParallelInfinitePlanes([0, 0, 1], z_distance - self.d, z_distance + self.d)
+        # TODO: np.abs((1-I) @ position / sqrt(2))
+        yz_distance = np.abs(np.dot(np.array([0, 1, 1]) / np.sqrt(2), self.position))
+        xz_distance = np.abs(np.dot(np.array([1, 0, 1]) / np.sqrt(2), self.position))
+        xy_distance = np.abs(np.dot(np.array([1, 1, 0]) / np.sqrt(2), self.position))
+        yz_planes = TwoParallelInfinitePlanes([1, 0, 0], yz_distance - self.d, yz_distance + self.d)
+        xz_planes = TwoParallelInfinitePlanes([0, 1, 0], xz_distance - self.d, xz_distance + self.d)
+        xy_planes = TwoParallelInfinitePlanes([0, 0, 1], xy_distance - self.d, xy_distance + self.d)
         return [yz_planes, xz_planes, xy_planes]
 
     def on_set_p0(self):
