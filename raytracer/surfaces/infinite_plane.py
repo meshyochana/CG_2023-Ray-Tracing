@@ -5,6 +5,7 @@ class InfinitePlane(Surface):
     def __init__(self, normal, offset, material_index):
         super(InfinitePlane, self).__init__(material_index)
         self.normal = np.array(normal)
+        self.normal = self.normal / np.linalg.norm(self.normal)
         self.offset = np.array(offset)
         self.p0normaldotplusoffset = None
 

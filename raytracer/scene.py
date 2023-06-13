@@ -31,14 +31,14 @@ class Scene():
             else:
                 raise TypeError('Unknown object type - neither Surface, Light or Material')
                 
-        # 2. Initialise surfaces with materials
+        # 2. Initialise surfaces with materials, and camera point
         for s in self.surfaces:
             s.set_material(self.materials[s.material_index])
             s.set_p0(self.camera.center)
 
     def render(self):
         # pixel in np.array([(0,0), (0,1), ..., (0, 500), ..., (500, 0), ..., (500, 500)])
-        image = np.zeros((*self.output_dimensions, 3))
+        image = np.zeros((*self.output_dimensions, 3), dtype=float)
         i = 0
         for pixel in self.image_pixels():
             i += 1
@@ -53,14 +53,18 @@ class Scene():
                 color = self.apply_light_trace(pixel, hit.surface)
             else:
                 color = self.scene_settings.background_color
+            # print(f'Pixel {pixel}: color {color}')
             image[pixel] = color
-        
+
+        image = np.array(image * 255, dtype=np.uint8)
+                
         return image
 
     def find_intersection(self, view_ray):
         best_hit = None
+        view_ray_normalized = view_ray / np.linalg.norm(view_ray)
         for surface in self.surfaces:
-            alpha = surface.calculate_intersection_factor(view_ray)
+            alpha = surface.calculate_intersection_factor(view_ray_normalized)
             hit = LightHit(surface, alpha)
             if not hit:
                 continue
