@@ -9,12 +9,13 @@ class InfinitePlane(Surface):
         self.p0normaldotplusoffset = None
 
     def on_set_p0(self):
-        self.p0normaldot = -np.dot(self.p0, self.normal) + self.offset
+        self.p0normaldotplusoffset = -np.dot(self.p0, self.normal) + self.offset
 
     def calculate_intersection_factor(self, vto) -> float:
         t = self.p0normaldotplusoffset / np.dot(vto, self.normal)
-        p = self.p0 + t * vto
-        return p
+        return t
+        # p = self.p0 + t * vto
+        # return p
 
 
 class TwoParallelInfinitePlanes(Surface):

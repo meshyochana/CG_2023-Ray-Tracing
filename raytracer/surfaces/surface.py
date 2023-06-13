@@ -1,9 +1,8 @@
 from material import Material
-from light_hit import LightHit
 
 class Surface(object):
     def __init__(self, material_index):
-        self.material_index = material_index
+        self.material_index = material_index - 1 # Given from 1, we want from 0
         self.material = None
         self.p0 = None
 
@@ -27,7 +26,3 @@ class Surface(object):
         """
         return -1
     
-    def get_intersection(self, vto):
-        alpha = self.calculate_intersection_factor(vto)
-        hit = LightHit(self, alpha)
-        return hit

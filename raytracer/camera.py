@@ -3,7 +3,7 @@ import numpy as np
 class Camera:
     def __init__(self, position, look_at, up_vector, screen_distance, screen_width):
         self.position = np.array(position)
-        self.look_at = np.arary(look_at)
+        self.look_at = np.array(look_at)
         self.up_vector = np.array(up_vector)
         self.screen_distance = screen_distance
         self.screen_width = screen_width
@@ -12,13 +12,13 @@ class Camera:
         self.ratio = None
         self._init_directions()
 
-    def __init_directions(self):
-        vto = self.look_at / np.norm(self.look_at)
-        vup = self.up_vector / np.norm(self.up_vector)
+    def _init_directions(self):
+        vto = self.look_at / np.linalg.norm(self.look_at)
+        vup = self.up_vector / np.linalg.norm(self.up_vector)
         vright = np.cross(vto, vup)
-        vright /= np.norm(vright)
+        vright /= np.linalg.norm(vright)
         vup_tilde = np.cross(vright, vto)
-        vup_tilde /= np.norm(vup_tilde)
+        vup_tilde /= np.linalg.norm(vup_tilde)
         self.vto = vto
         self.vright = vright
         self.vup_tilde = vup_tilde

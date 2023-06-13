@@ -51,7 +51,8 @@ def save_image(image_array):
     image = Image.fromarray(np.uint8(image_array))
 
     # Save the image to a file
-    image.save("scenes/Spheres.png")
+    image.save("raytracer/scenes/Spheres2.png")
+    print('saved to raytracer/scenes/Spheres2.png')
     
 
 def main():
@@ -67,9 +68,10 @@ def main():
 
     # TODO: Implement the ray tracer
     scene = Scene(camera, scene_settings, objects, args.width, args.height)
+    image_array = scene.render()
 
     # Dummy result
-    image_array = np.zeros((500, 500, 3))
+    # image_array = np.zeros((500, 500, 3))
 
     # Save the output image
     save_image(image_array)
