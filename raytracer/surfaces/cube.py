@@ -8,9 +8,9 @@ class Cube(Surface):
         self.position = position
         self.scale = scale
         self.d = scale // 2
-        self.corners = self._create_corners()
+        self.faces = self._create_faces()
         
-    def _create_corners(self):
+    def _create_faces(self):
         x_distance = self.position[1] * self.position[2]
         y_distance = self.position[0] * self.position[2]
         z_distance = self.position[0] * self.position[1]
@@ -20,7 +20,7 @@ class Cube(Surface):
         return [yz_planes, xz_planes, xy_planes]
 
     def on_set_p0(self):
-        for corner in self.corners:
+        for corner in self.faces:
             corner.on_set_p0()
     
     def calculate_intersection_factor(self, vto):
