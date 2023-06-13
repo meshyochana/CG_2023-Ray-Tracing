@@ -15,3 +15,27 @@ class InfinitePlane(Surface):
         t = self.p0normaldotplusoffset / np.dot(vto, self.normal)
         p = self.p0 + t * vto
         return p
+
+
+class TwoParallelInfinitePlanes(Surface):
+    def __init__(self, normal, offset1, offset2, material_index):
+        super(TwoParallelInfinitePlanes, self).__init__(material_index)
+        self.normal = np.array(normal)
+        self.offset1 = np.array(offset1)
+        self.offset2 = np.array(offset2)
+        self.p0normaldotplusoffset = None
+
+    def on_set_p0(self):
+        self.p0normaldot1 = -np.dot(self.p0, self.normal) + self.offset1
+        self.p0normaldot2 = -np.dot(self.p0, self.normal) + self.offset2
+
+    def calculate_intersection_factor(self, vto) -> float:
+        vto_norm = np.dot(vto, self.normal)
+        t1 = self.p0normaldotplusoffset1 / vto_norm
+        t2 = self.p0normaldotplusoffset2 / vto_norm
+        p1 = self.p0 + t1 * vto
+        p2 = self.p0 + t2 * vto
+        if p2 < p1:
+            p1, p2 = p2, p1
+        # TODO: Return LightHit instead, p1 is in p2 is out
+        return p1
