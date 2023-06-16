@@ -11,6 +11,7 @@ class Camera:
         self.Ry = None
         self.ratio = None
         self._init_directions()
+        print(f'Camera: pos={self.position}, lookat={self.look_at}, up_tilde={self.vup_tilde}, vright={self.vright}, up_tilde dot vright{np.dot(self.vup_tilde, self.vright)}')
 
     def _init_directions(self):
         vto = self.look_at / np.linalg.norm(self.look_at)

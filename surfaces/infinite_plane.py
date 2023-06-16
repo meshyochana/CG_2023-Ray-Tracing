@@ -18,6 +18,10 @@ class InfinitePlane(Surface):
         # p = self.p0 + t * vto
         # return p
 
+        
+    def __str__(self):
+        return f'InfinitePlane[normal={self.normal} offset={self.offset}]'
+
 
 class TwoParallelInfinitePlanes(Surface):
     def __init__(self, normal, offset1, offset2, material_index):

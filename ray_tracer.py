@@ -47,12 +47,12 @@ def parse_scene_file(file_path):
     return camera, scene_settings, objects
 
 
-def save_image(image_array):
+def save_image(image_array, output_path):
     image = Image.fromarray(np.uint8(image_array))
 
     # Save the image to a file
-    image.save("raytracer/scenes/Spheres2.png")
-    print('saved to raytracer/scenes/Spheres2.png')
+    image.save(output_path)
+    print(f'saved to {output_path}')
     
 
 def main():
@@ -63,7 +63,7 @@ def main():
     parser.add_argument('--height', type=int, default=500, help='Image height')
     args = parser.parse_args()
 
-    # Parse the scene file
+    # Parse the scene file.
     camera, scene_settings, objects = parse_scene_file(args.scene_file)
 
     # TODO: Implement the ray tracer
@@ -74,7 +74,7 @@ def main():
     # image_array = np.zeros((500, 500, 3))
 
     # Save the output image
-    save_image(image_array)
+    save_image(image_array, args.output_image)
 
 
 if __name__ == '__main__':

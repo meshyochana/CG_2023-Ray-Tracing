@@ -6,6 +6,9 @@ class Sphere(Surface):
         super(Sphere, self).__init__(material_index)
         self.position = np.array(position)
         self.radius = radius
+    
+    def __str__(self):
+        return f'Sphere[position={self.position} radius={self.radius}]'
 
     def on_set_p0(self):
         self.p0minuspos = self.p0 - self.position
