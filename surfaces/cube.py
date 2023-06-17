@@ -1,6 +1,7 @@
 import numpy as np
 from surfaces.surface import Surface
 from surfaces.infinite_plane import TwoParallelInfinitePlanes
+from rays.view_ray import ViewRay
 
 class Cube(Surface):
     def __init__(self, position, scale, material_index):
@@ -24,9 +25,9 @@ class Cube(Surface):
         for corner in self.faces:
             corner.on_set_p0()
     
-    def calculate_intersection_factor(self, vto):
-        alphas = np.array([plane.calculate_intersection_factor(vto) for plane in self.planes])
-        intersections = self.p0 + np.array([self.p0 + alpha * vto for alpha in alphas])
+    def calculate_intersection_factor(self, view_ray: ViewRay):
+        alphas = np.array([plane.calculate_intersection_factor(view_ray.vto) for plane in self.planes])
+        intersections = self.p0 + np.array([self.p0 + alpha * view_ray.vto for alpha in alphas])
         # TODO: Move to numpy
         relevant_intersections = list()
         for i in len(intersections):

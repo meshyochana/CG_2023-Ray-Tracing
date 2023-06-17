@@ -1,4 +1,5 @@
 from material import Material
+from rays.view_ray import ViewRay
 
 class Surface(object):
     def __init__(self, material_index):
@@ -16,7 +17,7 @@ class Surface(object):
     def set_material(self, material: Material):
         self.material = material
 
-    def calculate_intersection_factor(self, vto) ->float:
+    def calculate_intersection_factor(self, view_ray: ViewRay) ->float:
         """
         Check whether a ray intersects with the object, and if so, calculate the intersection distance
         @param[in] vto: The direction of the ray

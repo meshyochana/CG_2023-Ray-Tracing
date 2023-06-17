@@ -35,7 +35,7 @@ class Scene():
         # 2. Initialise surfaces with materials, and camera point
         for s in self.surfaces:
             s.set_material(self.materials[s.material_index])
-            s.set_p0(self.camera.center)
+            s.set_p0(self.camera.position)
 
     def render(self):
         # pixel in np.array([(0,0), (0,1), ..., (0, 500), ..., (500, 0), ..., (500, 500)])
@@ -48,10 +48,12 @@ class Scene():
         woo = 0
         for pixel in self.image_pixels():
             i += 1
+            # if np.all(pixel == np.array([250, 70])): # yellow
+            #     pass
             if i % 25000 == 0:
                 print(f'Epoch {i}...')
             # render pixel
-            view_ray = self.construct_ray_through_pixel(pixel)
+            view_ray = self.camera.get_pixel_ray(pixel)
             hit = self.find_intersection(view_ray)
             if hit:
             # trace light - build objects tree/list
@@ -77,9 +79,8 @@ class Scene():
 
     def find_intersection(self, view_ray):
         best_hit = None
-        view_ray_normalized = view_ray / np.linalg.norm(view_ray)
         for surface in self.surfaces:
-            alpha = surface.calculate_intersection_factor(view_ray_normalized)
+            alpha = surface.calculate_intersection_factor(view_ray)
             if alpha < 0:
                 continue
             hit = LightHit(surface, alpha)
@@ -97,11 +98,6 @@ class Scene():
         pixels = np.indices(self.output_dimensions)
         pixels = pixels.reshape(2, -1).T
         return pixels
-    
-    def construct_ray_through_pixel(self, pixel):
-        camera_pixel = self.camera.get_pixel_coordinate(pixel)
-        view_ray = camera_pixel - self.camera.center
-        return view_ray 
     
     def build_light_trace(self, hitting_surface: Surface):
         trace = list()

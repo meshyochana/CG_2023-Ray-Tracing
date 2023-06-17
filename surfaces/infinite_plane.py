@@ -12,8 +12,9 @@ class InfinitePlane(Surface):
     def on_set_p0(self):
         self.p0normaldotplusoffset = -np.dot(self.p0, self.normal) + self.offset
 
-    def calculate_intersection_factor(self, vto) -> float:
-        t = self.p0normaldotplusoffset / np.dot(vto, self.normal)
+    def calculate_intersection_factor(self, view_ray) -> float:
+        # XXX: Should we take abs? or reverse the normal if negative?
+        t = np.abs(self.p0normaldotplusoffset / np.dot(view_ray.vto, self.normal))
         return t
         # p = self.p0 + t * vto
         # return p

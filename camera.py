@@ -1,4 +1,5 @@
 import numpy as np
+from rays.view_ray import ViewRay
 
 class Camera:
     def __init__(self, position, look_at, up_vector, screen_distance, screen_width):
@@ -23,7 +24,7 @@ class Camera:
         self.vto = vto
         self.vright = vright
         self.vup_tilde = vup_tilde
-        self.center = self.position + self.screen_distance * vto
+        self.Pc = self.position + self.screen_distance * vto
 
     def init_resolution(self, Rx, Ry):
         ratio = self.screen_width / Rx
@@ -31,10 +32,13 @@ class Camera:
         self.Ry = Ry
         self.ratio = ratio
 
-    def get_pixel_coordinate(self, pixel):
+    def get_pixel_ray(self, pixel):
         i, j = pixel
-        vright_factor = (j - np.floor(self.Rx / 2)) * self.ratio
-        vup_factor = (i - np.floor(self.Ry / 2)) * self.ratio
-        view_ray = vright_factor * self.vright - vup_factor + self.vup_tilde
-        Pc = self.center + view_ray
-        return Pc
+        if j == 250:
+            pass
+        vright_factor = (j - self.Rx // 2) * self.ratio
+        vup_factor = (i - self.Ry // 2) * self.ratio
+        view_ray = self.Pc - vright_factor * self.vright - vup_factor * self.vup_tilde
+        vto = view_ray - self.position
+        ray = ViewRay(self.position, vto)
+        return ray
