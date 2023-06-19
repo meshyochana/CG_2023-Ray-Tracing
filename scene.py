@@ -106,4 +106,6 @@ class Scene():
     
     def apply_light_trace(self, pixel, surface: Surface):
         # print(f'light_color with {surface} material {surface.material}')
-        return surface.material.diffuse_color
+        diffuse_color = surface.material.diffuse_color
+    
+        return diffuse_color
