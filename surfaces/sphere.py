@@ -35,14 +35,6 @@ class Sphere(Surface):
             return -1
         # print(f't1={t1}, t2={t2}')
         return t1
-    
-    def get_reflection_ray(self, view_ray: ViewRay, intersection: np.array) -> ReflectionRay:
-        # intersection_point = view_ray.p + intersection_alpha * view_ray.vto
-        radius = intersection - self.position
-        norm = radius / np.linalg.norm(radius)
-        norm_component = np.dot(norm, view_ray)
-        reflection_ray_direction = ReflectionRay(intersection, view_ray.vto + 2 * norm_component)
-        return reflection_ray_direction
 
     def get_normal(self, point):
         mid_result = point - self.position

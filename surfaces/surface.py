@@ -1,3 +1,4 @@
+import numpy as np
 from material import Material
 from rays.view_ray import ViewRay
 from rays.reflection_ray import ReflectionRay
@@ -28,13 +29,16 @@ class Surface(object):
         """
         return -1
     
-    def get_reflection_ray(self, view_ray: ViewRay, intersection_alpha: float) -> ReflectionRay:
+    def get_reflection_ray(self, view_ray: ViewRay, intersection: np.array) -> ReflectionRay:
         """
         Get a view ray and its intersection_alpha point and return its reflection ray
         @param[in] view_ray The view ray
         @param[in] intersection_alpha The alpha where the view_ray intersects with the surface
         """
-        raise NotImplementedError()
+        norm = self.get_normal(intersection)
+        norm_component = np.dot(norm, view_ray)
+        reflection_ray_direction = ReflectionRay(intersection, view_ray.vto + 2 * norm_component)
+        return reflection_ray_direction
     
     def get_normal(self, point):
         raise NotImplementedError()
