@@ -60,19 +60,19 @@ class Scene():
             # light_trace = self.build_light_trace(hit.surface)
                 hc += 1
                 materials.add(hit.surface.material)
-                color = self.apply_light_trace(pixel, hit.surface)
+                color = self.apply_light_trace(hit)
             else:
                 bg += 1
                 color = self.scene_settings.background_color
             # print(f'Pixel {pixel}: color {color}')
-            if color == self.scene_settings.background_color:
+            if np.all(color == self.scene_settings.background_color):
                 woo += 1
             image[tuple(pixel)] = color
 
         image = np.array(image * 255, dtype=np.uint8)
         print(f'Image total: bg={bg}, hit color={hc}, woo={woo}')
         print(f'Hit materials: {materials} ')
-        print(f'No of colors: {set([tuple(a) for a in image.reshape(-1, 3).tolist()])}, count={[(c,[tuple(a) for a in image.reshape(-1, 3).tolist()].count(c)) for c in set([tuple(a) for a in image.reshape(-1, 3).tolist()])]} ')
+        # print(f'No of colors: {set([tuple(a) for a in image.reshape(-1, 3).tolist()])}, count={[(c,[tuple(a) for a in image.reshape(-1, 3).tolist()].count(c)) for c in set([tuple(a) for a in image.reshape(-1, 3).tolist()])]} ')
 
                 
         return image
@@ -83,7 +83,7 @@ class Scene():
             alpha = surface.calculate_intersection_factor(view_ray)
             if alpha < 0:
                 continue
-            hit = LightHit(surface, alpha)
+            hit = LightHit(surface, view_ray, alpha)
             if not best_hit or hit < best_hit:
                 best_hit = hit
                 
@@ -104,8 +104,37 @@ class Scene():
         # TODO: trace the light ray and build the list, or tree
         return trace
     
-    def apply_light_trace(self, pixel, surface: Surface):
+    def apply_light_trace(self, hit: LightHit):
         # print(f'light_color with {surface} material {surface.material}')
-        diffuse_color = surface.material.diffuse_color
+        diffuse_color = hit.surface.material.diffuse_color
+        I_diffusion = 0
+        I_specular = 0
+        for light in self.lights:
+            I = light.get_intensity(hit.position)
+            I_diffusion += self.get_diffuse_color(I, hit, light)
+            I_specular += self.get_specular_color(I, hit, light)
+
+        diffuse_color = hit.surface.material.diffuse_color * I_diffusion
+        specular_color = hit.surface.material.specular_color * I_specular
+        
+        color = diffuse_color + specular_color
+        
+        return color
     
+    def get_diffuse_color(self, light_intensity, hit: LightHit, light: Light) -> np.array:
+        light_inverse_direction = normalize(light.position - hit.position)
+        n_dot_l = np.dot(hit.get_normal(), light_inverse_direction)
+        diffuse_color = light_intensity * n_dot_l * light.color
         return diffuse_color
+    
+    def get_specular_color(self, light_intensity, hit: LightHit, light: Light) -> np.array:
+        light_inverse_direction = normalize(light.position - hit.position)
+        n_dot_l = np.dot(hit.get_normal(), light_inverse_direction)
+        n_dot_l_pow = np.power(n_dot_l, hit.surface.material.shininess)
+        specular_color = light.color * light_intensity * n_dot_l_pow * light.specular_intensity
+        return specular_color
+    
+
+def normalize(v):
+    v_normalized = v / np.linalg.norm(v)
+    return v_normalized

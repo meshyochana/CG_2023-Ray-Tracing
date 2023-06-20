@@ -5,3 +5,6 @@ class Ray(object):
         self.p = p
         self.vto = vto / np.linalg.norm(vto)
         self.ttl = ttl
+
+    def at(self, alpha):
+        return self.p + alpha * self.vto

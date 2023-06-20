@@ -19,9 +19,12 @@ class InfinitePlane(Surface):
         # p = self.p0 + t * vto
         # return p
 
-        
     def __str__(self):
         return f'InfinitePlane[normal={self.normal} offset={self.offset}]'
+    
+    def get_normal(self, point):
+        return self.normal
+
 
 
 class TwoParallelInfinitePlanes(Surface):
@@ -46,3 +49,4 @@ class TwoParallelInfinitePlanes(Surface):
             p1, p2 = p2, p1
         # TODO: Return LightHit instead, p1 is in p2 is out
         return p1
+    
