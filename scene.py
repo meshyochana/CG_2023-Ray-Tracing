@@ -6,6 +6,7 @@ from scene_settings import SceneSettings
 from camera import Camera
 from light_hit import LightHit
 from rays.view_ray import ViewRay
+from rays.light_ray import LightRay
 
 class Scene():
     def __init__(self, camera: Camera, scene_settings: SceneSettings, objects: list, width: int, height: int):
@@ -48,8 +49,8 @@ class Scene():
         woo = 0
         for pixel in self.image_pixels():
             i += 1
-            # if np.all(pixel == np.array([250, 70])): # yellow
-            #     pass
+            if np.all(pixel == np.array([270, 150])): # yellow
+                pass
             if i % 25000 == 0:
                 print(f'Epoch {i}...')
             # render pixel
@@ -69,13 +70,13 @@ class Scene():
                 woo += 1
             image[tuple(pixel)] = color
 
-        image = np.array(image * 255, dtype=np.uint8)
+        image_clipped = np.clip(image, 0, 1)
+        image_result = np.array(image_clipped * 255, dtype=np.uint8)
         print(f'Image total: bg={bg}, hit color={hc}, woo={woo}')
         print(f'Hit materials: {materials} ')
         # print(f'No of colors: {set([tuple(a) for a in image.reshape(-1, 3).tolist()])}, count={[(c,[tuple(a) for a in image.reshape(-1, 3).tolist()].count(c)) for c in set([tuple(a) for a in image.reshape(-1, 3).tolist()])]} ')
-
                 
-        return image
+        return image_result
 
     def find_intersection(self, view_ray):
         best_hit = None
@@ -110,26 +111,29 @@ class Scene():
         I_diffusion = 0
         I_specular = 0
         for light in self.lights:
+            light_ray = LightRay(light, hit.position)
             I = light.get_intensity(hit.position)
             I_diffusion += self.get_diffuse_color(I, hit, light)
-            I_specular += self.get_specular_color(I, hit, light)
+            I_specular += self.get_specular_color(I, hit, light_ray, light)
 
-        diffuse_color = hit.surface.material.diffuse_color * I_diffusion
-        specular_color = hit.surface.material.specular_color * I_specular
+        diffuse_color = np.multiply(hit.surface.material.diffuse_color, I_diffusion)
+        specular_color = np.multiply(hit.surface.material.specular_color, I_specular)
         
         color = diffuse_color + specular_color
         
         return color
     
     def get_diffuse_color(self, light_intensity, hit: LightHit, light: Light) -> np.array:
-        light_inverse_direction = normalize(light.position - hit.position)
-        n_dot_l = np.dot(hit.get_normal(), light_inverse_direction)
+        L = normalize(light.position - hit.position)
+        N = hit.get_normal()
+        n_dot_l = np.dot(N, L)
         diffuse_color = light_intensity * n_dot_l * light.color
         return diffuse_color
     
-    def get_specular_color(self, light_intensity, hit: LightHit, light: Light) -> np.array:
-        light_inverse_direction = normalize(light.position - hit.position)
-        n_dot_l = np.dot(hit.get_normal(), light_inverse_direction)
+    def get_specular_color(self, light_intensity, hit: LightHit, light_ray: LightRay, light: Light) -> np.array:
+        V = -hit.ray.vto
+        R = hit.surface.get_reflection_ray(light_ray, hit.position).vto
+        n_dot_l = np.dot(V, R)
         n_dot_l_pow = np.power(n_dot_l, hit.surface.material.shininess)
         specular_color = light.color * light_intensity * n_dot_l_pow * light.specular_intensity
         return specular_color

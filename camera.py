@@ -28,14 +28,12 @@ class Camera:
 
     def init_resolution(self, Rx, Ry):
         ratio = self.screen_width / Rx
+        self.ratio = ratio
         self.Rx = Rx
         self.Ry = Ry
-        self.ratio = ratio
 
     def get_pixel_ray(self, pixel):
         i, j = pixel
-        if j == 250:
-            pass
         vright_factor = (j - self.Rx // 2) * self.ratio
         vup_factor = (i - self.Ry // 2) * self.ratio
         view_ray = self.Pc - vright_factor * self.vright - vup_factor * self.vup_tilde

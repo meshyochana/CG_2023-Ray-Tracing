@@ -1,7 +1,7 @@
 import numpy as np
 from surfaces.surface import Surface
 from rays.reflection_ray import ReflectionRay
-from rays.view_ray import ViewRay
+from rays.ray import Ray
 
 class Sphere(Surface):
     def __init__(self, position, radius, material_index):
@@ -17,9 +17,9 @@ class Sphere(Surface):
         self.L = self.position - self.p0
         self.r_square_minus_L_square = self.r_square - np.dot(self.L, self.L)
 
-    def calculate_intersection_factor(self, view_ray: ViewRay) -> float:
+    def calculate_intersection_factor(self, ray: Ray) -> float:
         # Implement using geometric method
-        t_ca = np.dot(self.L, view_ray.vto)
+        t_ca = np.dot(self.L, ray.vto)
         if t_ca < 0:
             return -1
         t_hc_square = self.r_square_minus_L_square + t_ca ** 2

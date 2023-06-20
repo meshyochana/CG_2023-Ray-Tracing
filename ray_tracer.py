@@ -70,9 +70,6 @@ def main():
     scene = Scene(camera, scene_settings, objects, args.width, args.height)
     image_array = scene.render()
 
-    # Dummy result
-    # image_array = np.zeros((500, 500, 3))
-
     # Save the output image
     save_image(image_array, args.output_image)
 

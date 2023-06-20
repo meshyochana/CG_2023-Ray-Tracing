@@ -36,8 +36,8 @@ class Surface(object):
         @param[in] intersection_alpha The alpha where the view_ray intersects with the surface
         """
         norm = self.get_normal(intersection)
-        norm_component = np.dot(norm, view_ray)
-        reflection_ray_direction = ReflectionRay(intersection, view_ray.vto + 2 * norm_component)
+        norm_component = np.dot(norm, view_ray.vto)
+        reflection_ray_direction = ReflectionRay(intersection, view_ray.vto - 2 * norm_component)
         return reflection_ray_direction
     
     def get_normal(self, point):

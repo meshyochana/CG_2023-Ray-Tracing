@@ -11,9 +11,12 @@ class Light:
         self.radius = radius
 
     def get_intensity(self, point: np.array):
+        return 1
+        # TODO: Implement soft shadows here
         vec_d = self.position - point
         d_square = np.dot(vec_d, vec_d)
         return self.specular_intensity / d_square
+    
 
     # def diffuse_coeffecient(self, hit: LightHit):
     #     d = np.abs(self.position - hit.position)
