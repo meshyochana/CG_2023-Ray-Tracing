@@ -19,7 +19,7 @@ class Surface(object):
     def set_material(self, material: Material):
         self.material = material
 
-    def calculate_intersection_factor(self, view_ray: ViewRay) ->float:
+    def calculate_intersection_factor(self, view_ray: ViewRay) -> float:
         """
         Check whether a ray intersects with the object, and if so, calculate the intersection distance
         @param[in] vto The direction of the ray
@@ -36,8 +36,8 @@ class Surface(object):
         @param[in] intersection_alpha The alpha where the view_ray intersects with the surface
         """
         norm = self.get_normal(intersection)
-        norm_component = np.dot(norm, view_ray.vto)
-        reflection_ray_direction = ReflectionRay(intersection, view_ray.vto - 2 * norm_component)
+        norm_factor = np.dot(norm, view_ray.vto)
+        reflection_ray_direction = ReflectionRay(intersection, view_ray.vto - 2 * norm_factor * norm)
         return reflection_ray_direction
     
     def get_normal(self, point):

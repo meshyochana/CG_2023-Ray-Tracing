@@ -127,15 +127,25 @@ class Scene():
         L = normalize(light.position - hit.position)
         N = hit.get_normal()
         n_dot_l = np.dot(N, L)
-        diffuse_color = light_intensity * n_dot_l * light.color
+        if n_dot_l < 0:
+            diffuse_color = np.zeros((3, ), dtype=np.float)
+        else:
+            # print(f'diffuse ndotl={n_dot_l}! zeroing')
+            diffuse_color = light_intensity * n_dot_l * light.color
+
         return diffuse_color
     
     def get_specular_color(self, light_intensity, hit: LightHit, light_ray: LightRay, light: Light) -> np.array:
         V = -hit.ray.vto
         R = hit.surface.get_reflection_ray(light_ray, hit.position).vto
-        n_dot_l = np.dot(V, R)
-        n_dot_l_pow = np.power(n_dot_l, hit.surface.material.shininess)
-        specular_color = light.color * light_intensity * n_dot_l_pow * light.specular_intensity
+        V_dot_R = np.dot(V, R)
+        if V_dot_R < 0:
+            # print(f'ndotl={n_dot_l}! zeroing')
+            specular_color = np.zeros((3, ), dtype=np.float)
+        else:
+            n_dot_l_pow = np.power(V_dot_R, hit.surface.material.shininess)
+            specular_color = light.color * light_intensity * n_dot_l_pow * light.specular_intensity
+
         return specular_color
     
 

@@ -9,5 +9,7 @@ class LightRay(Ray):
         hit_to_light = light.position - position
         super(LightRay, self).__init__(position, hit_to_light)
 
-    def vto_dot_norm(self, n):
-        return np.dot(n, -self.vto)
+    @property
+    def vto(self):
+        return -self._vto
+    
