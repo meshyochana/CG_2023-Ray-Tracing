@@ -15,7 +15,8 @@ class Camera:
         print(f'Camera: pos={self.position}, lookat={self.look_at}, up_tilde={self.vup_tilde}, vright={self.vright}, up_tilde dot vright{np.dot(self.vup_tilde, self.vright)}')
 
     def _init_directions(self):
-        vto = self.look_at / np.linalg.norm(self.look_at)
+        vto = self.look_at - self.position
+        vto /= np.linalg.norm(vto)
         vup = self.up_vector / np.linalg.norm(self.up_vector)
         vright = np.cross(vto, vup)
         vright /= np.linalg.norm(vright)
