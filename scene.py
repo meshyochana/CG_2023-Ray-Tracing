@@ -6,6 +6,7 @@ from scene_settings import SceneSettings
 from camera import Camera
 from light_hit import LightHit
 from rays.view_ray import ViewRay
+from rays.ray import ReflectionRay
 from rays.light_ray import LightRay
 
 class Scene():
@@ -43,11 +44,12 @@ class Scene():
 
         # Go backwards to find the transparency color, start from background color
         total_color = self.scene_settings.background_color
-        if len(hits) > 1:
+        if len(hits) > 3:
             pass
         for hit in hits[::-1]:
             current_color = self.calc_diffuse_and_spec(hit)
-            total_color = current_color * (1 - hit.surface.material.transparency) + total_color * hit.surface.material.transparency
+            reflection_color = self.calc_reflection_color(hit)
+            total_color = current_color * (1 - hit.surface.material.transparency) + total_color * hit.surface.material.transparency + reflection_color
 
         return total_color
 
@@ -127,6 +129,17 @@ class Scene():
         trace = list()
         # TODO: trace the light ray and build the list, or tree
         return trace
+    
+    def calc_reflection_color(self, hit: LightHit):
+        if 1 >= hit.ray.ttl:
+            return np.zeros((3, ), dtype=np.float)
+        
+        ray = ReflectionRay(hit.position, hit.get_normal(), hit.ray.ttl - 1)
+        ray_color = self.ray_trace(ray)
+        color = np.multiply(hit.surface.material.reflection_color, ray_color)
+        if not np.all(color == np.array([0,0,0])):
+            pass
+        return color
     
     def calc_diffuse_and_spec(self, hit: LightHit):
         # print(f'light_color with {surface} material {surface.material}')
