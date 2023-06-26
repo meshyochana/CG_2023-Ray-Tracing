@@ -13,6 +13,9 @@ class LightHit:
     def __lt__(self, other):
         return self.alpha < other.alpha
     
+    def __eq__(self, other):
+        return self.surface == other.surface and self.alpha == other.alpha and self.ray == other.ray
+    
     def get_normal(self):
         normal = self.surface.get_normal(self.position)
         return normal
@@ -26,3 +29,4 @@ class LightHit:
     
     def __repr__(self):
         return self.__str__()
+    
