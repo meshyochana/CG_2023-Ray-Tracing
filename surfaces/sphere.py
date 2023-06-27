@@ -12,17 +12,21 @@ class Sphere(Surface):
     
     def __str__(self):
         return f'Sphere[position={self.position} radius={self.radius}]'
-
+    
+    """
     def on_set_p0(self):
         self.L = self.position - self.p0
         self.r_square_minus_L_square = self.r_square - np.dot(self.L, self.L)
+    """
 
     def calculate_intersection_factor(self, ray: Ray) -> float:
         # Implement using geometric method
-        t_ca = np.dot(self.L, ray.vto)
+        L = self.position - ray.p
+        r_square_minus_L_square = self.r_square - np.dot(L, L)
+        t_ca = np.dot(L, ray.vto)
         if t_ca < 0:
             return -1
-        t_hc_square = self.r_square_minus_L_square + t_ca ** 2
+        t_hc_square = r_square_minus_L_square + t_ca ** 2
         if t_hc_square < 0:    
             # print('awwww snap 2')
             return -1

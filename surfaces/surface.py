@@ -9,12 +9,14 @@ class Surface(object):
         self.material = None
         self.p0 = None
 
+    """
     def set_p0(self, p0):
         self.p0 = p0
         self.on_set_p0()
 
     def on_set_p0(self):
         pass
+    """
 
     def set_material(self, material: Material):
         self.material = material
@@ -37,9 +39,10 @@ class Surface(object):
         """
         norm = self.get_normal(intersection)
         norm_factor = np.dot(norm, view_ray.vto)
-        reflection_ray_direction = ReflectionRay(intersection, view_ray.vto - 2 * norm_factor * norm)
+        reflection_ray_direction = ReflectionRay(intersection, view_ray.vto - 2 * norm_factor * norm, view_ray.ttl - 1)
         return reflection_ray_direction
     
     def get_normal(self, point):
         raise NotImplementedError()
+    
     

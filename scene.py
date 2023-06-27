@@ -37,7 +37,7 @@ class Scene():
         # 2. Initialise surfaces with materials, and camera point
         for s in self.surfaces:
             s.set_material(self.materials[s.material_index])
-            s.set_p0(self.camera.position)
+            # s.set_p0(self.camera.position)
 
     def ray_trace(self, ray):
         hits = self.intersect(ray)
@@ -134,7 +134,7 @@ class Scene():
         if 1 >= hit.ray.ttl:
             return np.zeros((3, ), dtype=np.float)
         
-        ray = ReflectionRay(hit.position, hit.get_normal(), hit.ray.ttl - 1)
+        ray = hit.get_reflection_ray()
         ray_color = self.ray_trace(ray)
         color = np.multiply(hit.surface.material.reflection_color, ray_color)
         if not np.all(color == np.array([0,0,0])):

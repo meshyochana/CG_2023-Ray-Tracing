@@ -21,9 +21,11 @@ class Cube(Surface):
         xy_planes = TwoParallelInfinitePlanes([0, 0, 1], xy_distance - self.d, xy_distance + self.d)
         return [yz_planes, xz_planes, xy_planes]
 
+    """
     def on_set_p0(self):
         for corner in self.faces:
             corner.on_set_p0()
+    """
     
     def calculate_intersection_factor(self, ray: Ray):
         alphas = np.array([plane.calculate_intersection_factor(ray.vto) for plane in self.planes])
