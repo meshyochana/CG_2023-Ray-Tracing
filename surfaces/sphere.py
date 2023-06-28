@@ -23,7 +23,7 @@ class Sphere(Surface):
     def intersect(self, ray: Ray) -> LightHit:
         # Implement using geometric method
         L = self.position - ray.p
-        r_square_minus_L_square = self.r_square - np.dot(L, L)
+        r_square_minus_L_square = self.r_square - np.dot(L, L) 
         t_ca = np.dot(L, ray.vto)
         if t_ca < 0:
             return None

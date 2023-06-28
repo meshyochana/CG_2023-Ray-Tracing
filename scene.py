@@ -129,7 +129,7 @@ class Scene():
     
     def calc_reflection_color(self, hit: LightHit):
         if 1 >= hit.ray.ttl:
-            return np.zeros((3, ), dtype=np.float)
+            return np.zeros((3, ), dtype=float)
         
         ray = hit.get_reflection_ray()
         ray_color = self.ray_trace(ray)

@@ -13,7 +13,7 @@ class Light:
         self.specular_intensity = specular_intensity
         self.shadow_intensity = shadow_intensity
         self.radius = radius
-        self.shadow_rays_num = 3 #int(SceneSettings.root_number_shadow_rays)
+        self.shadow_rays_num = 1 #int(SceneSettings.root_number_shadow_rays)
 
     def get_intensity(self, point: np.array, objects):
         #return 1
@@ -48,7 +48,7 @@ class Light:
                 (self.radius/self.shadow_rays_num))
 
                 #shadow_ray = normalize(point - cell)
-                shadow_ray = Ray(point, point - cell)
+                shadow_ray = Ray(cell, cell-point)
                 
                 for obj in objects:
                     hit = obj.intersect(shadow_ray)
@@ -56,6 +56,7 @@ class Light:
                         hit_count -= 1
 
         hit_percentage = hit_count/float(self.shadow_rays_num)**2
+        a=0
         return hit_percentage
     
 
