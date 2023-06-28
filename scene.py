@@ -108,8 +108,8 @@ class Scene():
                 
         return hits_until_stop
     
-    def intersect(self, view_ray):
-        all_hits = [s.intersect(view_ray) for s in self.surfaces]
+    def intersect(self, ray):
+        all_hits = [s.intersect(ray) for s in self.surfaces]
         ordered_hits = sorted([h for h in all_hits if h is not None])
         hits_until_stop = self.crop_hits_until_non_transparent(ordered_hits)
 
@@ -118,7 +118,7 @@ class Scene():
     def image_pixels(self):
         pixels = list()
         # np.array([(0,0), (0,1), ..., (0, 500), ..., (500, 0), ..., (500, 500)])
-        pixels = np.indices(self.output_dimensions)#[:,270:300,270:300]
+        pixels = np.indices(self.output_dimensions)#[:,30:130,200:250]
         pixels = pixels.reshape(2, -1).T
         return pixels
     

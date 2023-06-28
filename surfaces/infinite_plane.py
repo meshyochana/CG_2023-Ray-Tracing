@@ -23,7 +23,7 @@ class InfinitePlane(Surface):
         minusp0normaldotplusoffset = -(np.dot(ray.p, self.normal) + self.offset)
         dot_result = np.dot(ray.vto, self.normal)
         if not np.dot(ray.vto, self.normal):
-            dot_result = EPSILON
+            return None
         t = minusp0normaldotplusoffset / dot_result
         if t < 0:
             return None
@@ -40,10 +40,10 @@ class InfinitePlane(Surface):
 
 
 class TwoParallelInfinitePlanes(Surface):
-    def __init__(self, normal, offset1, offset2, material_index):
+    def __init__(self, normal, offset, d, material_index):
         super(TwoParallelInfinitePlanes, self).__init__(material_index)
-        self.plane1 = InfinitePlane([-n for n in normal], offset1, material_index)
-        self.plane2 = InfinitePlane(normal, offset2, material_index)
+        self.plane1 = InfinitePlane([-n for n in normal], offset + d, material_index)
+        self.plane2 = InfinitePlane(normal, offset - d, material_index)
     """
     def on_set_p0(self):
         self.p0normaldot1 = -np.dot(self.p0, self.normal) + self.offset1

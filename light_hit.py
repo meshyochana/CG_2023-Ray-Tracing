@@ -14,6 +14,8 @@ class LightHit:
         return self.alpha < other.alpha
     
     def __eq__(self, other):
+        if other is None or not isinstance(other, LightHit):
+            return False
         return self.surface == other.surface and self.alpha == other.alpha and self.ray == other.ray
     
     def get_normal(self):

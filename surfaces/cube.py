@@ -18,9 +18,9 @@ class Cube(Surface):
         yz_offset = np.dot(np.array([1, 0, 0]), self.position)
         xz_offset = np.dot(np.array([0, 1, 0]), self.position)
         xy_offset = np.dot(np.array([0, 0, 1]), self.position)
-        yz_planes = TwoParallelInfinitePlanes([1, 0, 0], yz_offset - self.d, yz_offset + self.d, self.material_index)
-        xz_planes = TwoParallelInfinitePlanes([0, 1, 0], xz_offset - self.d, xz_offset + self.d, self.material_index)
-        xy_planes = TwoParallelInfinitePlanes([0, 0, 1], xy_offset - self.d, xy_offset + self.d, self.material_index)
+        yz_planes = TwoParallelInfinitePlanes([1, 0, 0], yz_offset, self.d, self.material_index)
+        xz_planes = TwoParallelInfinitePlanes([0, 1, 0], xz_offset, self.d, self.material_index)
+        xy_planes = TwoParallelInfinitePlanes([0, 0, 1], xy_offset, self.d, self.material_index)
         return [yz_planes, xz_planes, xy_planes]
 
     """
@@ -33,13 +33,17 @@ class Cube(Surface):
         return np.max(np.abs(hit.position - self.position)) <= self.d
     
     def intersect(self, ray: Ray) -> LightHit:
-        infine_planes_intersections = [face.intersect(ray) for face in self.faces]
-        faces_intersections = [CubeLightHit(self, hit.surface, hit.ray, hit.alpha) for hit in infine_planes_intersections
+        infinite_planes_intersections = [face.intersect(ray) for face in self.faces]
+        if infinite_planes_intersections[0]:
+            a = 1
+        faces_intersections = [CubeLightHit(self, hit.surface, hit.ray, hit.alpha) for hit in infinite_planes_intersections
                                if hit is not None and self._is_face_hit(hit)]
         if not faces_intersections:
             return None
         
         nearest_intersection = min(faces_intersections)
+        # if nearest_intersection == infinite_planes_intersections[1]:
+        #     a = 1
         return nearest_intersection
     
     def set_material(self, material: Material):
