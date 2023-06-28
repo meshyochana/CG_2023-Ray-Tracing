@@ -1,7 +1,7 @@
 import numpy as np
 
 class Ray(object):
-    def __init__(self, p, vto, ttl=10):
+    def __init__(self, p, vto, ttl=1):
         self.p = p
         self._vto = vto / np.linalg.norm(vto)
         self.ttl = ttl
@@ -15,4 +15,13 @@ class Ray(object):
     @property
     def vto(self):
         return self._vto
-    
+
+
+class IntersectionRay(Ray):
+    def __init__(self, p, vto, ttl):
+        super(IntersectionRay, self).__init__(p, vto, ttl)
+
+
+class ReflectionRay(Ray):
+    def __init__(self, p, vto, ttl):
+        super(ReflectionRay, self).__init__(p, vto, ttl)

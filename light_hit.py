@@ -13,12 +13,15 @@ class LightHit:
     def __lt__(self, other):
         return self.alpha < other.alpha
     
+    def __eq__(self, other):
+        return self.surface == other.surface and self.alpha == other.alpha and self.ray == other.ray
+    
     def get_normal(self):
-        normal = self.surface.get_normal(self.position)
+        normal = self.surface.get_normal(self)
         return normal
     
     def get_reflection_ray(self):
-        reflection = self.surface.get_reflection_ray(self.ray, self.position)
+        reflection = self.surface.get_reflection_ray(self.ray, self)
         return reflection
     
     def __str__(self):
@@ -26,3 +29,17 @@ class LightHit:
     
     def __repr__(self):
         return self.__str__()
+
+class CubeLightHit(LightHit):
+    def __init__(self, cube: Surface, face: Surface, ray: Ray, alpha: float):
+        super(CubeLightHit, self).__init__(face, ray, alpha)
+        self.cube = cube
+
+    def get_normal(self):
+        normal = self.surface.get_normal(self)
+        return normal
+    
+    def get_reflection_ray(self):
+        reflection = self.surface.get_reflection_ray(self.ray, self)
+        return reflection
+    
