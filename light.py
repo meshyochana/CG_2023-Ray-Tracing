@@ -51,7 +51,8 @@ class Light:
                 shadow_ray = Ray(point, point - cell)
                 
                 for obj in objects:
-                    if obj.calculate_intersection_factor(shadow_ray)>0: # intersection is detected
+                    hit = obj.intersect(shadow_ray)
+                    if hit is not None:
                         hit_count -= 1
 
         hit_percentage = hit_count/float(self.shadow_rays_num)**2
