@@ -44,8 +44,10 @@ class Scene():
 
         # Go backwards to find the transparency color, start from background color
         total_color = self.scene_settings.background_color
-        if len(hits) > 3:
+        if len(hits) > 1:
             pass
+            # print('a')
+
         for hit in hits[::-1]:
             current_color = self.calc_diffuse_and_spec(hit)
             reflection_color = self.calc_reflection_color(hit)
@@ -81,6 +83,7 @@ class Scene():
                 
         return image_result
 
+    """
     def find_intersection(self, view_ray):
         best_hit = None
         for surface in self.surfaces:
@@ -95,25 +98,19 @@ class Scene():
         # b;u    print(f'best hit alpha={hit.alpha}! surface %s' % (surface, ))
 
         return best_hit
-    
+    """
     def crop_hits_until_non_transparent(self, hits):
         hits_until_stop = hits
         for i in range(len(hits)):
             if 0 == hits[i].surface.material.transparency:
                 hits_until_stop = hits[: i + 1]
+                break
                 
         return hits_until_stop
     
     def intersect(self, view_ray):
-        hits = list()
-        for surface in self.surfaces:
-            alpha = surface.calculate_intersection_factor(view_ray)
-            if alpha < 0:
-                continue
-            hit = LightHit(surface, view_ray, alpha)
-            hits.append(hit)
-        
-        ordered_hits = sorted(hits)
+        all_hits = [s.intersect(view_ray) for s in self.surfaces]
+        ordered_hits = sorted([h for h in all_hits if h is not None])
         hits_until_stop = self.crop_hits_until_non_transparent(ordered_hits)
 
         return hits_until_stop
@@ -121,7 +118,7 @@ class Scene():
     def image_pixels(self):
         pixels = list()
         # np.array([(0,0), (0,1), ..., (0, 500), ..., (500, 0), ..., (500, 500)])
-        pixels = np.indices(self.output_dimensions)
+        pixels = np.indices(self.output_dimensions)#[:,270:300,270:300]
         pixels = pixels.reshape(2, -1).T
         return pixels
     
@@ -173,7 +170,7 @@ class Scene():
     
     def get_specular_color(self, light_intensity, hit: LightHit, light_ray: LightRay, light: Light) -> np.array:
         V = -hit.ray.vto
-        R = hit.surface.get_reflection_ray(light_ray, hit.position).vto
+        R = hit.surface.get_reflection_ray(light_ray, hit).vto
         V_dot_R = np.dot(V, R)
         if V_dot_R < 0:
             # print(f'ndotl={n_dot_l}! zeroing')

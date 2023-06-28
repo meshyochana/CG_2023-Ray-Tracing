@@ -1,6 +1,6 @@
 import numpy as np
 from material import Material
-from rays.view_ray import ViewRay
+from rays.ray import Ray
 from rays.reflection_ray import ReflectionRay
 
 class Surface(object):
@@ -21,28 +21,28 @@ class Surface(object):
     def set_material(self, material: Material):
         self.material = material
 
-    def calculate_intersection_factor(self, view_ray: ViewRay) -> float:
+    def intersect(self, ray: Ray):
         """
         Check whether a ray intersects with the object, and if so, calculate the intersection distance
         @param[in] vto The direction of the ray
 
-        @return The factor alpha thus the intersection points equals p0 + alpha * vto.
-                If there is no intersection, the returned factor will be negative
+        @return The LightHit object of the nearest intersection with the plane, or None if not intersects
         """
-        return -1
+        raise NotImplementedError()
     
-    def get_reflection_ray(self, view_ray: ViewRay, intersection: np.array) -> ReflectionRay:
+    def get_reflection_ray(self, ray: Ray, intersection) -> ReflectionRay:
         """
         Get a view ray and its intersection_alpha point and return its reflection ray
         @param[in] view_ray The view ray
-        @param[in] intersection_alpha The alpha where the view_ray intersects with the surface
+        @param[in] intersection The alpha where the view_ray intersects with the surface
         """
         norm = self.get_normal(intersection)
-        norm_factor = np.dot(norm, view_ray.vto)
-        reflection_ray_direction = ReflectionRay(intersection, view_ray.vto - 2 * norm_factor * norm, view_ray.ttl - 1)
+        norm_factor = np.dot(norm, ray.vto)
+        norm_direction = ray.vto - 2 * norm_factor * norm
+        reflection_ray_direction = ReflectionRay(intersection.position, norm_direction, ray.ttl - 1)
         return reflection_ray_direction
     
-    def get_normal(self, point):
+    def get_normal(self, hit):
         raise NotImplementedError()
     
     
