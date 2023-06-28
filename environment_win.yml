@@ -1,0 +1,30 @@
+name: hw1_env
+channels:
+  - pytorch
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.8
+  - cython
+  - pytest
+  - cudatoolkit
+  - freetype
+  - pip
+  - pip:
+#    - --extra-index-url https://download.pytorch.org/whl/torch_stable.html
+    - torch==1.8.0
+    - torchvision==0.9.0
+    - pillow
+    - ipython
+    - numpy
+    - scikit-learn==1.0.2
+    - jupyterlab
+    - matplotlib
+    - jupyter
+    - pandas
+    - tqdm
+    - ffmpeg
+    - opencv-python
+    - swig # for box2d on Windows
+    - nbmerge
+    - pytest-xdist
