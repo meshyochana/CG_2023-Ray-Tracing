@@ -5,8 +5,7 @@ from light import Light
 from scene_settings import SceneSettings
 from camera import Camera
 from light_hit import LightHit
-from rays.view_ray import ViewRay
-from rays.ray import ReflectionRay
+from light_hit import CubeLightHit
 from rays.light_ray import LightRay
 
 class Scene():
@@ -39,8 +38,8 @@ class Scene():
             s.set_material(self.materials[s.material_index])
             # s.set_p0(self.camera.position)
 
-    def ray_trace(self, ray):
-        hits = self.intersect(ray)
+    def ray_trace(self, ray, excluded_surfaces=[]):
+        hits = self.intersect(ray, excluded_surfaces)
 
         # Go backwards to find the transparency color, start from background color
         total_color = self.scene_settings.background_color
@@ -51,6 +50,8 @@ class Scene():
         for hit in hits[::-1]:
             current_color = self.calc_diffuse_and_spec(hit)
             reflection_color = self.calc_reflection_color(hit)
+            # if ray.ttl >= 1:
+                # print(f'{type(hit)} with {type(hit.surface)}: diffspec={current_color} reflection={reflection_color}')
             total_color = current_color * (1 - hit.surface.material.transparency) + total_color * hit.surface.material.transparency + reflection_color
 
         return total_color
@@ -108,8 +109,8 @@ class Scene():
                 
         return hits_until_stop
     
-    def intersect(self, ray):
-        all_hits = [s.intersect(ray) for s in self.surfaces]
+    def intersect(self, ray, excluded_surfaces=[]):
+        all_hits = [s.intersect(ray) for s in self.surfaces if s not in excluded_surfaces]
         ordered_hits = sorted([h for h in all_hits if h is not None])
         hits_until_stop = self.crop_hits_until_non_transparent(ordered_hits)
 
@@ -132,7 +133,9 @@ class Scene():
             return np.zeros((3, ), dtype=np.float)
         
         ray = hit.get_reflection_ray()
-        ray_color = self.ray_trace(ray)
+        hit_surface = hit.cube if isinstance(hit, CubeLightHit) else hit.surface
+        ray_color = self.ray_trace(ray, [hit_surface])
+        # print(ray_color)
         color = np.multiply(hit.surface.material.reflection_color, ray_color)
         if not np.all(color == np.array([0,0,0])):
             pass

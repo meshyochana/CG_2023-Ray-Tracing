@@ -30,9 +30,7 @@ class Cube(Surface):
     """
 
     def _is_face_hit(self, hit: LightHit):
-        position_without_norm = hit.position - np.multiply(hit.position, np.abs(hit.surface.normal))
         free_indexes = np.where(hit.surface.normal == 0)
-
         return np.max(np.abs(hit.position[free_indexes] - self.position[free_indexes])) <= self.d
     
     def intersect(self, ray: Ray) -> LightHit:
@@ -47,6 +45,8 @@ class Cube(Surface):
         nearest_intersection = min(faces_intersections)
         # if nearest_intersection == infinite_planes_intersections[1]:
         #     a = 1
+        # if np.all(np.array([0,1,0] != nearest_intersection.surface.normal)):
+            # print(f'nearest intersection norm: {nearest_intersection.surface.normal}')
         return nearest_intersection
     
     def set_material(self, material: Material):
