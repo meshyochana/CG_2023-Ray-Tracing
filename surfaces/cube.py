@@ -30,9 +30,7 @@ class Cube(Surface):
     """
 
     def _is_face_hit(self, hit: LightHit):
-        position_without_norm = hit.position - np.multiply(hit.position, np.abs(hit.surface.normal))
         free_indexes = np.where(hit.surface.normal == 0)
-
         return np.max(np.abs(hit.position[free_indexes] - self.position[free_indexes])) <= self.d
     
     def intersect(self, ray: Ray) -> LightHit:
