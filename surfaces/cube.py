@@ -8,7 +8,7 @@ from light_hit import LightHit, CubeLightHit
 class Cube(Surface):
     def __init__(self, position, scale, material_index):
         super(Cube, self).__init__(material_index)
-        self.position = position
+        self.position = np.array(position)
         self.scale = scale
         self.d = scale / 2
         self.faces = self._create_faces()
@@ -30,7 +30,10 @@ class Cube(Surface):
     """
 
     def _is_face_hit(self, hit: LightHit):
-        return np.max(np.abs(hit.position - self.position)) <= self.d
+        position_without_norm = hit.position - np.multiply(hit.position, np.abs(hit.surface.normal))
+        free_indexes = np.where(hit.surface.normal == 0)
+
+        return np.max(np.abs(hit.position[free_indexes] - self.position[free_indexes])) <= self.d
     
     def intersect(self, ray: Ray) -> LightHit:
         infinite_planes_intersections = [face.intersect(ray) for face in self.faces]
