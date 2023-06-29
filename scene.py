@@ -111,14 +111,17 @@ class Scene():
     def intersect(self, view_ray):
         all_hits = [s.intersect(view_ray) for s in self.surfaces]
         ordered_hits = sorted([h for h in all_hits if h is not None])
+        if len(ordered_hits) > 1 and isinstance(view_ray, LightRay):
+            a = 1
         hits_until_stop = self.crop_hits_until_non_transparent(ordered_hits)
-
+        if len(hits_until_stop) > 1 and isinstance(view_ray, LightRay):
+            a = 1
         return hits_until_stop
 
     def image_pixels(self):
         pixels = list()
         # np.array([(0,0), (0,1), ..., (0, 500), ..., (500, 0), ..., (500, 500)])
-        pixels = np.indices(self.output_dimensions)#[:,270:300,270:300]
+        pixels = np.indices(self.output_dimensions)
         pixels = pixels.reshape(2, -1).T
         return pixels
     
@@ -145,7 +148,19 @@ class Scene():
         I_specular = 0
         for light in self.lights:
             light_ray = LightRay(light, hit.position)
-            I = light.get_intensity(hit.position)
+            light_hits = self.intersect(light_ray)
+            intensity_factor = 1
+            if len(light_hits) > 1:
+                a = 1
+            for light_hit in light_hits:
+                if light_hit.surface == hit.surface:
+                    break
+                intensity_factor *= hit.surface.material.transparency
+                if not intensity_factor:
+                    break
+            if 0 < intensity_factor and intensity_factor < 1:
+                a = 1
+            I = intensity_factor * light.get_intensity(hit.position)
             I_diffusion += self.get_diffuse_color(I, hit, light)
             I_specular += self.get_specular_color(I, hit, light_ray, light)
 
