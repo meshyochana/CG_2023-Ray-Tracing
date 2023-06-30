@@ -35,7 +35,11 @@ class Cube(Surface):
             return False
         relevant_components = np.array([face_hit.surface.normal == 0 for face_hit in faces_hits])
         free_indexes = np.where(np.all(relevant_components == True, axis=0))[0]
-        return np.max(np.abs(faces_hits[0].position[free_indexes] - self.position[free_indexes])) <= self.d
+        max_diff = np.max(np.abs(faces_hits[0].position[free_indexes] - self.position[free_indexes]))
+        is_hit = max_diff <= self.d
+        if is_hit:
+            a = 1
+        return is_hit
     
     def intersect(self, ray: Ray) -> LightHit:
         infinite_planes_intersections = [twofaces.intersect(ray) for twofaces in self.faces]
