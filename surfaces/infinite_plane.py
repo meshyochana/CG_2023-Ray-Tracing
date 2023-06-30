@@ -18,6 +18,7 @@ class InfinitePlane(Surface):
         self.p0normaldotplusoffset = -np.dot(self.p0, self.normal) + self.offset
     """
 
+
     def intersect(self, ray) -> LightHit:
         # XXX: Should we take abs? or reverse the normal if negative?
         minusp0normaldotplusoffset = -(np.dot(ray.p, self.normal) - self.offset)
