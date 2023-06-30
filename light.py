@@ -41,7 +41,6 @@ class Light:
         return (1 - self.shadow_intensity) + (self.shadow_intensity * hit_percentage)       
 
     def hit_counter(self, scene, shadow_hit, bottom_left_rect, paralel_vec_1, paralel_vec_2):
-        point = shadow_hit.position
         hit_count = 0
         for i in range(self.shadow_rays_num):
             for j in range(self.shadow_rays_num):
@@ -51,7 +50,7 @@ class Light:
                 (self.radius/self.shadow_rays_num)
 
                 #shadow_ray = normalize(point - cell)
-                shadow_ray = Ray(point, cell-point)
+                shadow_ray = Ray(cell, shadow_hit.position-cell)
                 opacity = 1
                 hits = scene.intersect(shadow_ray)
                 for hit in hits:
