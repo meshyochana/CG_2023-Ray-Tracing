@@ -3,7 +3,6 @@ from material import Material
 from surfaces.surface import Surface
 from surfaces.infinite_plane import TwoParallelInfinitePlanes
 from rays.ray import Ray
-from rays.reflection_ray import ReflectionRay
 from light_hit import LightHit, CubeLightHit
 
 class Cube(Surface):
@@ -40,19 +39,26 @@ class Cube(Surface):
         if is_hit:
             a = 1
         return is_hit
+        hit = hits[0]
+        free_indexes = np.where(hit.surface.normal == 0)
+        return np.max(np.abs(hit.position[free_indexes] - self.position[free_indexes])) <= self.d
     
     def intersect(self, ray: Ray) -> LightHit:
-        infinite_planes_intersections = [twofaces.intersect(ray) for twofaces in self.faces]
-
-        # Create a dictionary from alpha to all the faces with that alpha value        
+        infinite_planes_intersections = [face.intersect(ray) for face in self.faces]
+        # Create a dictionary from alpha to all the faces with that alpha value
         alphas_to_faces_hits = dict()
         for p in infinite_planes_intersections:
             if p is not None:
                 alphas_to_faces_hits.setdefault(p.alpha, list()).append(p)
-        
+
         faces_intersections = [CubeLightHit(self, faces, ray, alpha) for alpha, faces in alphas_to_faces_hits.items()
                                if self._is_cube_hit(faces)]
         
+        # faces_hits = [h for h in infinite_planes_intersections if h is not None and self._is_face_hit(hit)]
+        # if infinite_planes_intersections[0]:
+        #     a = 1
+        # faces_intersections = [CubeLightHit(self, [hit], hit.ray, hit.alpha) for hit in infinite_planes_intersections
+        #                        if hit is not None and self._is_face_hit(hit)]
         if not faces_intersections:
             return None
         
@@ -68,18 +74,14 @@ class Cube(Surface):
         for f in self.faces:
             f.set_material(material)
 
-    def get_reflection_ray(self, ray: Ray, hit: CubeLightHit) -> Ray:
+    # def get_reflection_ray(self, ray: Ray, hit: CubeLightHit) -> Ray:
         """
         Get a view ray and its intersection_alpha point and return its reflection ray
         @param[in] view_ray The view ray
         @param[in] intersection_alpha The alpha where the view_ray intersects with the surface
         """
         # hit.surface is InfinitePlane
-        norm = self.get_normal(hit)
-        norm_factor = np.dot(norm, ray.vto)
-        norm_direction = ray.vto - 2 * norm_factor * norm
-        reflection_ray_direction = ReflectionRay(self.position, norm_direction, ray.ttl - 1)
-        return reflection_ray_direction
+        # return hit.faces_hits[0].get_reflection_ray()
     
     def get_normal(self, hit: CubeLightHit):
         # Actually intersect with the face (InfinitePlane), doesn't matter

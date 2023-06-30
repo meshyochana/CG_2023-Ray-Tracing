@@ -134,8 +134,7 @@ class Scene():
             return np.zeros((3, ), dtype=np.float)
         
         ray = hit.get_reflection_ray()
-        hit_surface = hit.surface
-        ray_color = self.ray_trace(ray, [hit_surface])
+        ray_color = self.ray_trace(ray, [hit.surface])
         # print(ray_color)
         color = np.multiply(hit.surface.material.reflection_color, ray_color)
         if not np.all(color == np.array([0,0,0])):
