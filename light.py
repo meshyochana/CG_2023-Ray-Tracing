@@ -16,7 +16,7 @@ class Light:
         self.radius = radius
         self.shadow_rays_num = 5 #int(SceneSettings.root_number_shadow_rays)
 
-    def get_intensity(self, point: np.array, objects):
+    def get_intensity(self, point: np.array, surfaces):
         #return 1
         ray_vector = normalize(point - self.position)
 
@@ -35,23 +35,23 @@ class Light:
         paralel_vec_2 = normalize(np.cross(paralel_vec_1,ray_vector))
 
         bottom_left_rect = self.position-0.5*self.radius*(paralel_vec_1+paralel_vec_2)
-        hit_percentage = self.hit_counter(point, bottom_left_rect, paralel_vec_1, paralel_vec_2, objects)
+        hit_percentage = self.hit_counter(point, bottom_left_rect, paralel_vec_1, paralel_vec_2, surfaces)
 
         return (1 - self.shadow_intensity) + (self.shadow_intensity * hit_percentage)       
 
-    def hit_counter(self, point, bottom_left_rect, paralel_vec_1, paralel_vec_2, objects):
+    def hit_counter(self, point, bottom_left_rect, paralel_vec_1, paralel_vec_2, surfaces):
         hit_count = (self.shadow_rays_num)**2
         for i in range(self.shadow_rays_num):
             for j in range(self.shadow_rays_num):
                 cell = bottom_left_rect +\
                 ((i + np.random.uniform()) * paralel_vec_1 +\
-                (j + np.random.uniform()) * paralel_vec_2 *\
-                (self.radius/self.shadow_rays_num))
+                (j + np.random.uniform()) * paralel_vec_2) *\
+                (self.radius/self.shadow_rays_num)
 
                 #shadow_ray = normalize(point - cell)
                 shadow_ray = Ray(point, cell-point)
                 
-                for obj in objects:
+                for obj in surfaces:
                     hit = obj.intersect(shadow_ray)
                     if hit is not None and not isinstance(obj,InfinitePlane):
                         hit_count -= 1
