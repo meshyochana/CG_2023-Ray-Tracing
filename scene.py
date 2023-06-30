@@ -119,7 +119,8 @@ class Scene():
     def image_pixels(self):
         pixels = list()
         # np.array([(0,0), (0,1), ..., (0, 500), ..., (500, 0), ..., (500, 500)])
-        pixels = np.indices(self.output_dimensions)#[:,30:130,200:250]
+        pixels = np.indices(self.output_dimensions)#[:20:260,127:140]
+        # pixels = np.array([(246,127)])
         pixels = pixels.reshape(2, -1).T
         return pixels
     
@@ -133,7 +134,7 @@ class Scene():
             return np.zeros((3, ), dtype=np.float)
         
         ray = hit.get_reflection_ray()
-        hit_surface = hit.cube if isinstance(hit, CubeLightHit) else hit.surface
+        hit_surface = hit.surface
         ray_color = self.ray_trace(ray, [hit_surface])
         # print(ray_color)
         color = np.multiply(hit.surface.material.reflection_color, ray_color)

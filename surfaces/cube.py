@@ -3,6 +3,7 @@ from material import Material
 from surfaces.surface import Surface
 from surfaces.infinite_plane import TwoParallelInfinitePlanes
 from rays.ray import Ray
+from rays.reflection_ray import ReflectionRay
 from light_hit import LightHit, CubeLightHit
 
 class Cube(Surface):
@@ -29,16 +30,25 @@ class Cube(Surface):
             corner.on_set_p0()
     """
 
-    def _is_face_hit(self, hit: LightHit):
-        free_indexes = np.where(hit.surface.normal == 0)
-        return np.max(np.abs(hit.position[free_indexes] - self.position[free_indexes])) <= self.d
+    def _is_cube_hit(self, faces_hits: list[LightHit]):
+        if not faces_hits:
+            return False
+        relevant_components = np.array([face_hit.surface.normal == 0 for face_hit in faces_hits])
+        free_indexes = np.where(np.all(relevant_components == True, axis=0))[0]
+        return np.max(np.abs(faces_hits[0].position[free_indexes] - self.position[free_indexes])) <= self.d
     
     def intersect(self, ray: Ray) -> LightHit:
-        infinite_planes_intersections = [face.intersect(ray) for face in self.faces]
-        if infinite_planes_intersections[0]:
-            a = 1
-        faces_intersections = [CubeLightHit(self, hit.surface, hit.ray, hit.alpha) for hit in infinite_planes_intersections
-                               if hit is not None and self._is_face_hit(hit)]
+        infinite_planes_intersections = [twofaces.intersect(ray) for twofaces in self.faces]
+
+        # Create a dictionary from alpha to all the faces with that alpha value        
+        alphas_to_faces_hits = dict()
+        for p in infinite_planes_intersections:
+            if p is not None:
+                alphas_to_faces_hits.setdefault(p.alpha, list()).append(p)
+        
+        faces_intersections = [CubeLightHit(self, faces, ray, alpha) for alpha, faces in alphas_to_faces_hits.items()
+                               if self._is_cube_hit(faces)]
+        
         if not faces_intersections:
             return None
         
@@ -61,11 +71,20 @@ class Cube(Surface):
         @param[in] intersection_alpha The alpha where the view_ray intersects with the surface
         """
         # hit.surface is InfinitePlane
-        return hit.surface.get_reflection_ray(ray, hit)
+        norm = self.get_normal(hit)
+        norm_factor = np.dot(norm, ray.vto)
+        norm_direction = ray.vto - 2 * norm_factor * norm
+        reflection_ray_direction = ReflectionRay(self.position, norm_direction, ray.ttl - 1)
+        return reflection_ray_direction
     
     def get_normal(self, hit: CubeLightHit):
         # Actually intersect with the face (InfinitePlane), doesn't matter
         # hit.surface is InfinitePlane
-        return hit.surface.get_normal(hit)
+        normal = sum([face_hit.get_normal() for face_hit in hit.faces_hits])
+        norm = np.linalg.norm(normal)
+        if norm:
+            normal /= norm
+
+        return normal
     
     

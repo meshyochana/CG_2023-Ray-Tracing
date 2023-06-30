@@ -2,6 +2,7 @@ import numpy as np
 
 from surfaces.surface import Surface
 from rays.ray import Ray
+from rays.reflection_ray import ReflectionRay
 
 class LightHit:
     def __init__(self, surface: Surface, ray: Ray, alpha: float):
@@ -32,16 +33,23 @@ class LightHit:
     def __repr__(self):
         return self.__str__()
 
-class CubeLightHit(LightHit):
-    def __init__(self, cube: Surface, face: Surface, ray: Ray, alpha: float):
-        super(CubeLightHit, self).__init__(face, ray, alpha)
-        self.cube = cube
 
-    def get_normal(self):
-        normal = self.surface.get_normal(self)
-        return normal
+class CubeLightHit(LightHit):
+    def __init__(self, cube: Surface, faces_hits: list[LightHit], ray: Ray, alpha: float):
+        super(CubeLightHit, self).__init__(cube, ray, alpha)
+        self.faces_hits = faces_hits
+
+    # def get_normal(self):
+    #     normal = np.sum([face.get_normal(self) for face in self.faces])
+    #     norm = np.linalg.norm(normal)
+    #     if norm:
+    #         normal /= norm
+
+    #     return normal
     
-    def get_reflection_ray(self):
-        reflection = self.surface.get_reflection_ray(self.ray, self)
-        return reflection
-    
+    # def get_reflection_ray(self):
+    #     norm = self.get_normal()
+    #     norm_factor = np.dot(norm, self.ray.vto)
+    #     norm_direction = self.ray.vto - 2 * norm_factor * norm
+    #     reflection_ray_direction = ReflectionRay(self.position, norm_direction, self.ray.ttl - 1)
+    #     return reflection_ray_direction

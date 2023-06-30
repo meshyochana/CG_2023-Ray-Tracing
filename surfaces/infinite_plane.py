@@ -69,5 +69,11 @@ class TwoParallelInfinitePlanes(Surface):
         return min([hit1, hit2])
     
     def get_normal(self, hit):
-        return hit.surface.get_normal(hit)
+        for twofaces in hit.faces:
+            if self.plane1 in twofaces:
+                return self.plane1.get_normal()
+            elif self.plane2 in hit.faces:
+                return self.plane2.get_normal()
+        else:
+            raise Exception('No plane is on hit surfaces')
     
