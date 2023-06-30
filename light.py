@@ -45,8 +45,8 @@ class Light:
             for j in range(self.shadow_rays_num):
                 cell = bottom_left_rect +\
                 ((i + np.random.uniform()) * paralel_vec_1 +\
-                (j + np.random.uniform()) * paralel_vec_2 *\
-                (self.radius/self.shadow_rays_num))
+                (j + np.random.uniform()) * paralel_vec_2) *\
+                (self.radius/self.shadow_rays_num)
 
                 #shadow_ray = normalize(point - cell)
                 shadow_ray = Ray(point, cell-point)
