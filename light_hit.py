@@ -35,7 +35,7 @@ class LightHit:
 
 
 class CubeLightHit(LightHit):
-    def __init__(self, cube: Surface, faces_hits: list[LightHit], ray: Ray, alpha: float):
+    def __init__(self, cube: Surface, faces_hits: list, ray: Ray, alpha: float):
         super(CubeLightHit, self).__init__(cube, ray, alpha)
         self.faces_hits = faces_hits
 

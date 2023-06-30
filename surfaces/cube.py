@@ -29,7 +29,7 @@ class Cube(Surface):
             corner.on_set_p0()
     """
 
-    def _is_cube_hit(self, faces_hits: list[LightHit]):
+    def _is_cube_hit(self, faces_hits: list):
         if not faces_hits:
             return False
         relevant_components = np.array([face_hit.surface.normal == 0 for face_hit in faces_hits])
