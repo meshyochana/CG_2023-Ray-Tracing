@@ -16,8 +16,9 @@ class Light:
         self.radius = radius
         self.shadow_rays_num = 5 #int(SceneSettings.root_number_shadow_rays)
 
-    def get_intensity(self, point: np.array, surfaces):
+    def get_intensity(self, scene, shadow_hit):
         #return 1
+        point = shadow_hit.position
         ray_vector = normalize(point - self.position)
 
         # calculate the the plane constant d, according to: ax+by+cz+d=0
@@ -35,12 +36,13 @@ class Light:
         paralel_vec_2 = normalize(np.cross(paralel_vec_1,ray_vector))
 
         bottom_left_rect = self.position-0.5*self.radius*(paralel_vec_1+paralel_vec_2)
-        hit_percentage = self.hit_counter(point, bottom_left_rect, paralel_vec_1, paralel_vec_2, surfaces)
+        hit_percentage = self.hit_counter(scene, shadow_hit, bottom_left_rect, paralel_vec_1, paralel_vec_2)
 
         return (1 - self.shadow_intensity) + (self.shadow_intensity * hit_percentage)       
 
-    def hit_counter(self, point, bottom_left_rect, paralel_vec_1, paralel_vec_2, surfaces):
-        hit_count = (self.shadow_rays_num)**2
+    def hit_counter(self, scene, shadow_hit, bottom_left_rect, paralel_vec_1, paralel_vec_2):
+        point = shadow_hit.position
+        hit_count = 0
         for i in range(self.shadow_rays_num):
             for j in range(self.shadow_rays_num):
                 cell = bottom_left_rect +\
@@ -50,11 +52,15 @@ class Light:
 
                 #shadow_ray = normalize(point - cell)
                 shadow_ray = Ray(point, cell-point)
-                
-                for obj in surfaces:
-                    hit = obj.intersect(shadow_ray)
-                    if hit is not None and not isinstance(obj,InfinitePlane):
-                        hit_count -= 1
+                opacity = 1
+                hits = scene.intersect(shadow_ray)
+                for hit in hits:
+                    if hit.surface == shadow_hit.surface:
+                        break
+                    opacity *= hit.surface.material.transparency
+                    if not opacity:
+                        break
+                hit_count += opacity
 
         hit_percentage = hit_count/float(self.shadow_rays_num)**2
         if hit_percentage<1:

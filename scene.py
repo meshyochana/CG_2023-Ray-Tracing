@@ -148,7 +148,7 @@ class Scene():
         I_specular = 0
         for light in self.lights:
             light_ray = LightRay(light, hit.position)
-            I = light.get_intensity(hit.position, self.surfaces)
+            I = light.get_intensity(self, hit)
             I_diffusion += self.get_diffuse_color(I, hit, light)
             I_specular += self.get_specular_color(I, hit, light_ray, light)
 
