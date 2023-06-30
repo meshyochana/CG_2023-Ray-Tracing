@@ -4,6 +4,7 @@ from light_hit import LightHit
 from material import Material
 from scene_settings import SceneSettings
 from surfaces.surface import Surface
+from surfaces.infinite_plane import InfinitePlane
 from rays.ray import Ray
 
 class Light:
@@ -13,7 +14,7 @@ class Light:
         self.specular_intensity = specular_intensity
         self.shadow_intensity = shadow_intensity
         self.radius = radius
-        self.shadow_rays_num = 1 #int(SceneSettings.root_number_shadow_rays)
+        self.shadow_rays_num = 5 #int(SceneSettings.root_number_shadow_rays)
 
     def get_intensity(self, point: np.array, objects):
         #return 1
@@ -48,15 +49,16 @@ class Light:
                 (self.radius/self.shadow_rays_num))
 
                 #shadow_ray = normalize(point - cell)
-                shadow_ray = Ray(cell, cell-point)
+                shadow_ray = Ray(point, cell-point)
                 
                 for obj in objects:
                     hit = obj.intersect(shadow_ray)
-                    if hit is not None:
+                    if hit is not None and not isinstance(obj,InfinitePlane):
                         hit_count -= 1
 
         hit_percentage = hit_count/float(self.shadow_rays_num)**2
-        a=0
+        if hit_percentage<1:
+            a=0
         return hit_percentage
     
 
